@@ -30,7 +30,7 @@ public class MainMenu extends Application {
         primaryStage.setTitle("Auto Insurance App");
         //create buttons for App Navigation
         
-        StackPane root = new StackPane();
+        //StackPane root = new StackPane();
         //root.getChildren().add(addAccidentBtn);
         //primaryStage.setScene(new Scene(root, 1000, 950));
         

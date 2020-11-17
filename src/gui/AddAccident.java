@@ -6,6 +6,8 @@ import java.time.ZoneId;
 
 import classes.Accidents;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -29,16 +31,17 @@ import javafx.scene.text.Text;
 
 public class AddAccident extends Application{
 
-	int numVehicles = 1; 
+	int numVehicles = 1;
+	Accidents addAccident = new Accidents();
+	String vin[];
+	String ssn[];
+	Float damages[];
+	String driver_ssn[];
+	
 	@Override
 	public void start(Stage primaryStage){
 		Connect conn = new Connect();
 		Connect.connect();
-		Accidents addAccident = new Accidents();
-		String vin[];
-		String ssn[];
-		Float damages[];
-		String driver_ssn[];
 		
 		GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -59,6 +62,10 @@ public class AddAccident extends Application{
         
         Label lNthDriverSsn = new Label("Driver SSN: ");
         TextField tNthDriverSsn = new TextField();
+        Label lNthDriverDamages = new Label("Vehicle Damages: ");
+        TextField tNthDriverDamages = new TextField();
+        Label lNthDriverVin= new Label("Vehicle Vin: ");
+        TextField tNthDriverVin = new TextField();
         
         
         DatePicker datePicker = new DatePicker();
@@ -66,8 +73,9 @@ public class AddAccident extends Application{
 		Label lDate = new Label("Date of Accident");
         Button backMainMenuBtn = new Button();
         Button submitBtn = new Button();
-        Button addVehicle = new Button();
-        
+        Button addVehicleBtn = new Button();
+        Button submitNewDriverBtn = new Button();
+        submitNewDriverBtn.setText("Submit Driver");
         backMainMenuBtn.setText("Back To Main Menu");
         //return to Main menu
         backMainMenuBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -90,19 +98,25 @@ public class AddAccident extends Application{
                	menu.start(primaryStage);
         	}
         });
-        addVehicle.setText("Add Vehicle Involved");
-        addVehicle.setOnAction(new EventHandler<ActionEvent>() {
+        addVehicleBtn.setText("Add Vehicle Involved");
+        addVehicleBtn.setOnAction(new EventHandler<ActionEvent>() {
         	//numVehicles += 1
         	
             public void handle(ActionEvent e) {        		
             	numVehicles++;
             	GridPane grid2 = new GridPane();
-            	grid.setAlignment(Pos.CENTER);
-                grid.setHgap(10);
-                grid.setVgap(10);
-                grid.setPadding(new Insets(25, 25, 25, 25));
+            	
+            	grid2.setAlignment(Pos.CENTER);
+                grid2.setHgap(10);
+                grid2.setVgap(10);
+                grid2.setPadding(new Insets(25, 25, 25, 25));
             	grid2.add(lNthDriverSsn, 0, 2);
             	grid2.add(tNthDriverSsn, 1, 2);
+            	grid2.add(lNthDriverVin, 0, 3);
+            	grid2.add(tNthDriverVin, 1, 3);
+            	grid2.add(lNthDriverDamages, 0, 4);
+            	grid2.add(tNthDriverDamages, 1, 4);
+            	grid2.add(submitNewDriverBtn, 0, 6);
             	Scene moDriverScene = new Scene(grid2);
             	primaryStage.setScene(moDriverScene);
             	primaryStage.show();
@@ -120,6 +134,14 @@ public class AddAccident extends Application{
 		     }
 		});
 		
+		tOwnerDamages.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d{0,7}([\\.]\\d{0,4})?")) {
+                    tOwnerDamages.setText(oldValue);
+                }
+            }
+        });
 		Text scenetitle = new Text("Create An Accident Report");
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 		//grid.add(child, columnIndex, rowIndex);
@@ -139,13 +161,28 @@ public class AddAccident extends Application{
 	    grid.add(tOwnerDamages, 6, 4);
 	    grid.add(lOwnerVin, 5, 5);
 	    grid.add(tOwnerVin, 6, 5);
-	    grid.add(addVehicle, 0, 6);
-		
-		
+	    grid.add(addVehicleBtn, 0, 6);		
 		
 		Button otherDriverBtn = new Button();
 		otherDriverBtn.setText("Add Another Involved Vehicle");
-		Scene scene = new Scene(grid);		
+		Scene scene = new Scene(grid);	
+		
+		submitNewDriverBtn.setOnAction(new EventHandler<ActionEvent>() {			
+            public void handle(ActionEvent e) {
+            	if(tNthDriverSsn.getText() != null || tNthDriverDamages.getText() != null || tNthDriverVin.getText() != null ) {
+            		ssn[numVehicles] = tNthDriverSsn.getText();
+                	vin[numVehicles] = tNthDriverVin.getText();
+                	damages[numVehicles] = Float.parseFloat(tNthDriverDamages.getText());
+                	primaryStage.setScene(scene);
+                	primaryStage.show();
+            	}
+            	else {
+            		
+            	}
+            	
+        	}
+        });
+        
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}	
