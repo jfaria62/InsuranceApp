@@ -31,12 +31,12 @@ import javafx.scene.text.Text;
 
 public class AddAccident extends Application{
 
-	int numVehicles = 1;
+	int numVehicles = 0;
 	Accidents addAccident = new Accidents();
-	String vin[];
-	String ssn[];
-	Float damages[];
-	String driver_ssn[];
+	String vin[] = new String[10];
+	String ssn[] = new String[10];
+	Float damages[] = new Float[10];
+	String driver_ssn[] = new String[10];
 	
 	@Override
 	public void start(Stage primaryStage){
@@ -101,7 +101,7 @@ public class AddAccident extends Application{
         addVehicleBtn.setText("Add Vehicle Involved");
         addVehicleBtn.setOnAction(new EventHandler<ActionEvent>() {
         	//numVehicles += 1
-        	
+        	@Override
             public void handle(ActionEvent e) {        		
             	numVehicles++;
             	GridPane grid2 = new GridPane();
@@ -168,18 +168,33 @@ public class AddAccident extends Application{
 		Scene scene = new Scene(grid);	
 		
 		submitNewDriverBtn.setOnAction(new EventHandler<ActionEvent>() {			
-            public void handle(ActionEvent e) {
-            	if(tNthDriverSsn.getText() != null || tNthDriverDamages.getText() != null || tNthDriverVin.getText() != null ) {
+            @Override
+			public void handle(ActionEvent e) {
+            	lNthDriverSsn.setText("Driver SSN: ");                		
+            	lNthDriverDamages.setText("Vehicle Damages: ");                		
+            	lNthDriverVin.setText("Vehicle Vin: ");                		
+        		
+            	if(tNthDriverSsn.getText().isEmpty()) {
+        			lNthDriverSsn.setStyle("-fx-text-inner-color: red;");
+            		lNthDriverSsn.setText("*Driver SSN Required");                		
+        		}
+            	if(tNthDriverDamages.getText().isEmpty()) {
+        			lNthDriverDamages.setStyle("-fx-text-inner-color: red;");
+            		lNthDriverDamages.setText("*Vehicle Damages Required");                		
+        		}
+            	if(tNthDriverVin.getText().isEmpty()) {
+            		lNthDriverVin.setStyle("-fx-text-color: red;");
+            		lNthDriverVin.setText("*Vehicle VIN Required");
+        		}
+            	else {
+            		System.out.print("Everything wasn't null ");
+                	
             		ssn[numVehicles] = tNthDriverSsn.getText();
-                	vin[numVehicles] = tNthDriverVin.getText();
+            		vin[numVehicles] = tNthDriverVin.getText();
                 	damages[numVehicles] = Float.parseFloat(tNthDriverDamages.getText());
                 	primaryStage.setScene(scene);
-                	primaryStage.show();
-            	}
-            	else {
-            		
-            	}
-            	
+                	primaryStage.show();                
+            	}            	
         	}
         });
         
