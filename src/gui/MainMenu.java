@@ -10,8 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -21,7 +19,7 @@ import server.Connect;
 public class MainMenu extends Application {
 	public static void main(String[] args) {
 		Connect conn = new Connect();
-		conn.connect();
+		Connect.connect();
 		launch(args);
     }
     
@@ -43,19 +41,27 @@ public class MainMenu extends Application {
         final Text actiontarget = new Text();
         grid.add(actiontarget, 1, 6);
         
-        Button addAccidentBtn= new Button();
-        addAccidentBtn.setText("Add An Accident");
-        addAccidentBtn.setOnAction(new EventHandler<ActionEvent>() {
-        	 
+        Button addAccidentBtn= new Button("Add An Accident");
+        Button searchByCriteriaBtn = new Button("Search By Criteria Range");
+        addAccidentBtn.setOnAction(new EventHandler<ActionEvent>() {        	 
             @Override
             public void handle(ActionEvent e) {
                 AddAccident aa = new AddAccident();
-               	aa.start(primaryStage);
+               	aa.start(primaryStage);               	
+            }
+        });
+        
+        searchByCriteriaBtn.setOnAction(new EventHandler<ActionEvent>() {        	 
+            @Override
+            public void handle(ActionEvent e) {
+                SearchCriteria sc = new SearchCriteria();
+               	sc.start(primaryStage);
                	//aa.show();
 				//actiontarget.setFill(Color.FIREBRICK);
                 //actiontarget.setText("Sign in button pressed");
             }
         });
+        
         grid.add(addAccidentBtn, 0, 3);
         Text scenetitle = new Text("Welcome");
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
@@ -73,7 +79,7 @@ public class MainMenu extends Application {
         TextField pwBox = new TextField();
         grid.add(pwBox, 1, 2);
         
-        Scene scene = new Scene(grid, 600, 575);
+        Scene scene = new Scene(grid, 700, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

@@ -2,9 +2,6 @@ package gui;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneId;
-
-import classes.Accidents;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -14,16 +11,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import server.Connect;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -31,15 +25,17 @@ import javafx.scene.text.Text;
 
 public class AddAccident extends Application{
 
-	int numVehicles = 1;
-	Accidents addAccident = new Accidents();
-	String vin[];
-	String ssn[];
-	Float damages[];
-	String driver_ssn[];
+	int numVehicles = 0;
+	Date accidentDate;
+	String city;
+	String state;
+	String vin[] = new String[10];
+	String ssn[] = new String[10];
+	Float damages[] = new Float[10];
+	String driver_ssn[] = new String[10];
 	
 	@Override
-	public void start(Stage primaryStage){
+	public void start(Stage primaryStage) {
 		Connect conn = new Connect();
 		Connect.connect();
 		
@@ -53,30 +49,45 @@ public class AddAccident extends Application{
         TextField tCity = new TextField();
         Label lState = new Label("State: ");
         TextField tState = new TextField();
-        Label lOwnerSsn = new Label("Your SSN: ");
+        Label lOwnerSsn = new Label("Your SSN: \n###-##-#### format");
         TextField tOwnerSsn = new TextField();
         Label lOwnerDamages = new Label("Your Vehicle Damages: ");
         TextField tOwnerDamages = new TextField();
         Label lOwnerVin= new Label("Your Vehicle Vin: ");
         TextField tOwnerVin= new TextField();
-        
-        Label lNthDriverSsn = new Label("Driver SSN: ");
+        //TextFormatter fmt = new 
+       // tOwnerSsn.setTextFormatter(fmt);
+       
+        Label lNthDriverSsn = new Label("Driver SSN: \n###-##-#### format");
         TextField tNthDriverSsn = new TextField();
         Label lNthDriverDamages = new Label("Vehicle Damages: ");
         TextField tNthDriverDamages = new TextField();
         Label lNthDriverVin= new Label("Vehicle Vin: ");
         TextField tNthDriverVin = new TextField();
         
-        
+       
         DatePicker datePicker = new DatePicker();
         HBox dateBox = new HBox(datePicker);
 		Label lDate = new Label("Date of Accident");
-        Button backMainMenuBtn = new Button();
-        Button submitBtn = new Button();
-        Button addVehicleBtn = new Button();
-        Button submitNewDriverBtn = new Button();
-        submitNewDriverBtn.setText("Submit Driver");
-        backMainMenuBtn.setText("Back To Main Menu");
+        Button backMainMenuBtn = new Button("Back To Main Menu");
+        Button submitBtn = new Button("Submit");
+        Button addVehicleBtn = new Button("Add Vehicle Involved");
+        Button submitNewDriverBtn = new Button("Submit Driver");
+        Button cancelBtn = new Button("Cancel");        
+                
+        //makes sure State text stays below 2 characters and capitalizes
+        tState.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> ov, final String oldValue, final String newValue) {
+                String s = tState.getText().toUpperCase();
+                tState.setText(s); 
+                if (tState.getText().length() > 2) {
+                    s = tState.getText().substring(0, 2).toUpperCase();
+                    tState.setText(s);
+                }
+            }
+        });
+        
         //return to Main menu
         backMainMenuBtn.setOnAction(new EventHandler<ActionEvent>() {
         	@Override
@@ -84,28 +95,14 @@ public class AddAccident extends Application{
                 MainMenu menu = new MainMenu();
                 menu.start(primaryStage);
         	}
-        });
-        backMainMenuBtn.setStyle("-fx-background-color: #EB7B71");
-        submitBtn.setText("Submit Claim");
-        //set Values for Accident info and send to server
-        submitBtn.setOnAction(new EventHandler<ActionEvent>() {
+        });        
+       
+        //add another vehicle to the involvement
+        addVehicleBtn.setOnAction(new EventHandler<ActionEvent>() {
         	@Override
             public void handle(ActionEvent e) {        		
-                MainMenu menu = new MainMenu();                
-               	//addAccident.setDriver(ssn);
-               	
-                //conn.addAccident(addAccident.getDate(), addAccident.getCity(), addAccident.getState(), vin, damages, driver_ssn, numVehicles);
-               	menu.start(primaryStage);
-        	}
-        });
-        addVehicleBtn.setText("Add Vehicle Involved");
-        addVehicleBtn.setOnAction(new EventHandler<ActionEvent>() {
-        	//numVehicles += 1
-        	
-            public void handle(ActionEvent e) {        		
             	numVehicles++;
-            	GridPane grid2 = new GridPane();
-            	
+            	GridPane grid2 = new GridPane();            	
             	grid2.setAlignment(Pos.CENTER);
                 grid2.setHgap(10);
                 grid2.setVgap(10);
@@ -117,7 +114,8 @@ public class AddAccident extends Application{
             	grid2.add(lNthDriverDamages, 0, 4);
             	grid2.add(tNthDriverDamages, 1, 4);
             	grid2.add(submitNewDriverBtn, 0, 6);
-            	Scene moDriverScene = new Scene(grid2);
+            	grid2.add(cancelBtn, 3, 6);
+            	Scene moDriverScene = new Scene(grid2, 700, 600);
             	primaryStage.setScene(moDriverScene);
             	primaryStage.show();
         	}
@@ -129,23 +127,42 @@ public class AddAccident extends Application{
 			public void handle(ActionEvent e) {
 				LocalDate date = datePicker.getValue();
 		        Date aDate = Date.valueOf(LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth())); 
-				addAccident.setDate(aDate);
-		        System.err.println("Selected date: " + addAccident.getDate());
+				accidentDate = aDate;
+		        System.err.println("Selected date: " + accidentDate);
 		     }
 		});
 		
+		//makes sure damages field is numeric
 		tOwnerDamages.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d{0,7}([\\.]\\d{0,4})?")) {
+                if (!newValue.matches("\\d{0,7}([\\.]\\d{0,4})?")) {                	
                     tOwnerDamages.setText(oldValue);
+                    lOwnerDamages.setText("*Only Dollar Amount Damages*");
+                }
+                else {
+                	lOwnerDamages.setText("Your Vehicle Damages: ");
                 }
             }
         });
+		
+		//makes sure other driver damages field is numeric
+		tNthDriverDamages.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d{0,7}([\\.]\\d{0,4})?")) {                	
+                	tNthDriverDamages.clear();;
+                	lNthDriverDamages.setText("*Only Dollar Amount Damages*");
+                }
+                else {
+                	lNthDriverDamages.setText("Vehicle Damages: ");
+                }
+            }
+        });
+		
+		//add all elements to current scene
 		Text scenetitle = new Text("Create An Accident Report");
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-		//grid.add(child, columnIndex, rowIndex);
-		//grid.add(submitBtn, columnIndex, rowIndex);
 		grid.add(backMainMenuBtn, 0, 0, 2, 1);
 		grid.add(scenetitle, 0, 1, 3, 1);
 	    grid.add(lAInfo, 0, 2);
@@ -161,25 +178,131 @@ public class AddAccident extends Application{
 	    grid.add(tOwnerDamages, 6, 4);
 	    grid.add(lOwnerVin, 5, 5);
 	    grid.add(tOwnerVin, 6, 5);
-	    grid.add(addVehicleBtn, 0, 6);		
+	    grid.add(addVehicleBtn, 0, 6);	
+	    grid.add(submitBtn, 6, 6);
 		
 		Button otherDriverBtn = new Button();
 		otherDriverBtn.setText("Add Another Involved Vehicle");
-		Scene scene = new Scene(grid);	
+		Scene scene = new Scene(grid, 700, 600);
 		
-		submitNewDriverBtn.setOnAction(new EventHandler<ActionEvent>() {			
-            public void handle(ActionEvent e) {
-            	if(tNthDriverSsn.getText() != null || tNthDriverDamages.getText() != null || tNthDriverVin.getText() != null ) {
-            		ssn[numVehicles] = tNthDriverSsn.getText();
-                	vin[numVehicles] = tNthDriverVin.getText();
-                	damages[numVehicles] = Float.parseFloat(tNthDriverDamages.getText());
-                	primaryStage.setScene(scene);
-                	primaryStage.show();
+		//set what happens on Cancel Button Click
+		cancelBtn.setOnAction(new EventHandler<ActionEvent>() {			
+            @Override
+			public void handle(ActionEvent e) {
+            	lNthDriverSsn.setText("Driver SSN: ");                		
+            	lNthDriverDamages.setText("Vehicle Damages: ");                		
+            	lNthDriverVin.setText("Vehicle Vin: ");                		
+            	lNthDriverSsn.setTextFill(Color.BLACK);                		
+            	lNthDriverDamages.setTextFill(Color.BLACK);                		
+            	lNthDriverVin.setTextFill(Color.BLACK);
+            	tNthDriverSsn.clear();
+            	tNthDriverDamages.clear();
+            	tNthDriverVin.clear();            	
+            	primaryStage.setScene(scene);
+            	primaryStage.show();    
+            }
+            
+		});
+		
+		 //set Values for Accident info and send to server
+        submitBtn.setOnAction(new EventHandler<ActionEvent>() {
+        	@Override
+            public void handle(ActionEvent e) {        		
+        		lOwnerSsn.setText("Driver SSN: \n###-##-#### format");                		
+            	lOwnerDamages.setText("Vehicle Damages: ");                		
+            	lOwnerVin.setText("Vehicle Vin: "); 
+            	lCity.setText("City: ");
+	            lState.setText("State: ");
+	            lDate.setText("*Date of Accident: ");
+            	lOwnerSsn.setTextFill(Color.BLACK);                		
+            	lOwnerDamages.setTextFill(Color.BLACK);                		
+            	lOwnerVin.setTextFill(Color.BLACK);
+	        	lCity.setTextFill(Color.BLACK);
+	        	lState.setTextFill(Color.BLACK);
+	        	lDate.setTextFill(Color.BLACK);
+	            
+            	if(tOwnerSsn.getText().isEmpty()) {
+        			lOwnerSsn.setTextFill(Color.RED);
+            		lOwnerSsn.setText("*Driver SSN Required");                		
+        		}
+            	if(tOwnerDamages.getText().isEmpty()) {
+        			lOwnerDamages.setTextFill(Color.RED);
+            		lOwnerDamages.setText("*Vehicle Damages Required");                		
+        		}
+            	if(tOwnerVin.getText().isEmpty()) {
+            		lOwnerVin.setTextFill(Color.RED);
+            		lOwnerVin.setText("*Vehicle VIN Required");
+        		}
+            	if(tCity.getText().isEmpty()) {
+            		lCity.setTextFill(Color.RED);
+            		lCity.setText("*City Required");
+        		}
+            	if(tState.getText().isEmpty()) {
+            		lState.setTextFill(Color.RED);
+            		lState.setText("*State Required");
+        		}
+            	if(dateBox.getChildren( ) != null ) {
+            		lDate.setTextFill(Color.RED);
+            		lDate.setText("*Date Required");
             	}
-            	else {
+            	//successful data entry and submission
+            	if(!tOwnerVin.getText().isEmpty() && !tOwnerDamages.getText().isEmpty() && !tOwnerSsn.getText().isEmpty()
+            			&& !tState.getText().isEmpty() && !tCity.getText().isEmpty() && dateBox.getChildren( ) != null ){
             		
+            		city = tCity.getText();
+            		state = tState.getText();            		
+            		ssn[numVehicles] = tOwnerSsn.getText();
+            		vin[numVehicles] = tOwnerVin.getText();
+                	damages[numVehicles] = Float.parseFloat(tOwnerDamages.getText());
+                	conn.addAccident(accidentDate, city, state, vin, damages, driver_ssn, numVehicles);
+                	
+                	System.out.print("numV " + numVehicles + "\nssn " + ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages "+ damages[numVehicles]);
+                	MainMenu menu = new MainMenu();  
+            		menu.start(primaryStage);           
             	}
-            	
+        	}
+        });       
+        
+		// Collect and check data entered for a NEW Driver
+		submitNewDriverBtn.setOnAction(new EventHandler<ActionEvent>() {			
+            @Override
+			public void handle(ActionEvent e) {
+            	//reset labels
+            	lNthDriverSsn.setText("Driver SSN: \n###-##-#### format");                		
+            	lNthDriverDamages.setText("Vehicle Damages: ");                		
+            	lNthDriverVin.setText("Vehicle Vin: ");                		
+            	lNthDriverSsn.setTextFill(Color.BLACK);                		
+            	lNthDriverDamages.setTextFill(Color.BLACK);                		
+            	lNthDriverVin.setTextFill(Color.BLACK);
+            	//check for text entry
+            	if(tNthDriverSsn.getText().isEmpty()) {
+        			lNthDriverSsn.setTextFill(Color.RED);
+            		lNthDriverSsn.setText("*Driver SSN Required");                		
+        		}
+            	if(tNthDriverDamages.getText().isEmpty()) {
+        			lNthDriverDamages.setTextFill(Color.RED);
+            		lNthDriverDamages.setText("*Vehicle Damages Required");                		
+        		}
+            	if(tNthDriverVin.getText().isEmpty()) {
+            		lNthDriverVin.setTextFill(Color.RED);
+            		lNthDriverVin.setText("*Vehicle VIN Required");
+        		}
+            	//successful data entry and submission
+            	if(!tNthDriverVin.getText().isEmpty() && !tNthDriverDamages.getText().isEmpty() && !tNthDriverSsn.getText().isEmpty()) {
+            		ssn[numVehicles] = tNthDriverSsn.getText();
+            		vin[numVehicles] = tNthDriverVin.getText();
+                	damages[numVehicles] = Float.parseFloat(tNthDriverDamages.getText());
+                	//reset fields for next driver info input
+                	lNthDriverSsn.setText("Driver SSN: ");                		
+                	lNthDriverDamages.setText("Vehicle Damages: ");                		
+                	lNthDriverVin.setText("Vehicle Vin: "); 
+                	tNthDriverSsn.clear();
+                	tNthDriverDamages.clear();
+                	tNthDriverVin.clear();
+                	System.out.print(ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages"+ damages[numVehicles]);
+                	primaryStage.setScene(scene);
+                	primaryStage.show();                
+            	}            	
         	}
         });
         
