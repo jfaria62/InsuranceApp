@@ -1,23 +1,25 @@
 /*Create a connection and manage sql transactions/queries to and from database
 */
 package server;
-import java.sql.Statement;
-import classes.People;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
+import classes.Accidents;
+import classes.People;
 
 public class Connect {
     private static Connection conn;
     private static Statement stmt;
     private static ResultSet rs;	
 
+    
     public static void connect() {
-
+    	
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
@@ -43,23 +45,24 @@ public class Connect {
     }
     
     public void addAccident(Date date, String city, String state, String vin[], Float damages[], String driver_ssn[], int numVehicles){
-        String sqlAccidents = "Insert into accidents (aid, date, city, state) values(?, ?, ?, ?)";
+        String sqlAccidents = "Insert into accidents (aid, accident_date, city, state) values(?, ?, ?, ?)";
         String sqlInvolvements = "Insert into involvements (aid, vin, damages, driver_ssn) values(?, ?,?,?)";
         int aid, i;
         //Add Accident
         //date city state -> Accidents (generate aid)
-        //vin, damages, driver_ssn -> Involvements
+        //VIN, damages, driver_ssn -> Involvements
         try{
             rs = stmt.executeQuery("select count(*) from accidents");   //get number of accidents currently in table
             rs.next();
             aid = rs.getInt(1) + 1;                                     //create aid for new accident to be added 
-
+            System.out.print("\nAccident #" + aid + " being added");
             PreparedStatement prep = conn.prepareStatement(sqlAccidents);   //create prepared statement to insert to accidents table
             prep.setInt(1, aid);                                            //set info for preparedStatement
             prep.setDate(2, date);
             prep.setString(3, city);
             prep.setString(4, state);
             prep.executeUpdate();
+            System.out.print("\nDate: " + date + " city: " + city + "state ");
             //insert new rows into involvements for each vehicle in the reported accident
             for(i = 0; i < numVehicles; i++){   
                 prep = conn.prepareStatement(sqlInvolvements);
@@ -77,38 +80,42 @@ public class Connect {
         }
     }
 
-   /* public Accidents getAccidents(){
-        int aid, count;
-        Date accident_date;
-        String city;
-        String state;
-        Float damages;
-        String driver_ssn;
-        int i = 0;
-        rs = stmt.executeQuery("select count(*) from accidents");
-        rs.next();
-        count = rs.getInt(1);
-        System.out.println("Count: " + count);
-        try{
-            Accidents[] accidents = new Accidents[count];
-            rs = stmt.executeQuery("select * from accidents");
-            while(rs.next()){
-                aid = rs.getInt("aid");
-                accident_date = rs.getDate("accident_date");
-                city = rs.getString("city");
-                state = rs.getString("state");
-                damages = rs.getFloat("damages");
-                driver_ssn = rs.getString("driver_ssn");
-                accidents[i] = new Accidents(aid, accident_date,city, state, damages, driver_ssn);
-
-                return accidents; 
+    public Accidents[] getAccidentsById(int aid) {   	
+       
+	   int count;
+	   Date accident_date;
+	   String city;
+	   String state;
+	   Float damages;
+	   String driver_ssn;
+	   int i = 0;
+	   
+	   try{
+		   String sqlAccidents = "SELECT a.accident_date, a.city, a.state, i.vin, i.damages FROM accidents a, involvements i where a.aid == i.aid and a.aid == ?";
+		   rs = stmt.executeQuery("select count(*) FROM accidents a, involvements i where a.aid == i.aid and a.aid == ?");
+		   rs.next();
+		   count = rs.getInt(1);
+		   Accidents[] records = new Accidents[count];
+	       
+		   System.out.println("Count: " + count);
+	   
+	       PreparedStatement prep = conn.prepareStatement(sqlAccidents);   //create prepared statement to insert to accidents table
+	       
+	       rs = prep.executeQuery();
+	       while(rs.next()){
+	    	   records[i].setDate(rs.getDate("accident_date"));  
+	    	   records[i].setLocation(rs.getString("city"), rs.getString("state"));
+	    	   records[i].setDamages(rs.getFloat("damages")); 
+	    	    
             }
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
-        }
-        return accidents[];
-    }
-*/
+
+	       return records;   
+       }catch(SQLException e){
+           System.out.println(e.getMessage());
+       }
+	return null;
+   }
+
     public People findPeople(String fname, String lname){
         People peeps = new People();
         String fn, ln;
