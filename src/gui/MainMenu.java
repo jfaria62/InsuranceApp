@@ -18,8 +18,6 @@ import server.Connect;
  
 public class MainMenu extends Application {
 	public static void main(String[] args) {
-		Connect conn = new Connect();
-		Connect.connect();
 		launch(args);
     }
     
@@ -43,6 +41,7 @@ public class MainMenu extends Application {
         
         Button addAccidentBtn= new Button("Add An Accident");
         Button searchByCriteriaBtn = new Button("Search By Criteria Range");
+                        
         addAccidentBtn.setOnAction(new EventHandler<ActionEvent>() {        	 
             @Override
             public void handle(ActionEvent e) {
@@ -63,22 +62,12 @@ public class MainMenu extends Application {
         });
         
         grid.add(addAccidentBtn, 0, 3);
+        grid.add(searchByCriteriaBtn, 3, 3);
         Text scenetitle = new Text("Welcome");
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(scenetitle, 0, 0, 2, 1);
 
-        Label userName = new Label("User Name:");
-        grid.add(userName, 0, 1);
-
-        TextField userTextField = new TextField();
-        grid.add(userTextField, 1, 1);
-
-        Label pw = new Label("Password:");
-        grid.add(pw, 0, 2);
-
-        TextField pwBox = new TextField();
-        grid.add(pwBox, 1, 2);
-        
+               
         Scene scene = new Scene(grid, 700, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
