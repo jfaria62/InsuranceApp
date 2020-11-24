@@ -116,18 +116,25 @@ public class Connect {
 	return null;
    }
 
-    public People findPeople(String fname, String lname){
-        People peeps = new People();
-        String fn, ln;
-        try{
-            rs = stmt.executeQuery("select * from people where fname=" + fname + "AND lname=" + lname);
-            fn = rs.getString("fname");//loop through for all data
-            ln = rs.getString("lname");
-            peeps.setName(fn, ln);
+    //change return type to Accidents[]
+    public void getByCriteria(Date minDate, Date maxDate, Float minAvg, Float maxAvg, Float minTot, Float maxTot){
+    	//Accidents results[] = new Accidents[]; 
+    	People peeps = new People();
+        String mainQuery = "select a.aid, a.accident_date, a.city, a.state FROM involvements i, accidents a where a.aid == i.aid group by a.aid ";
+        String avgDamagesQuery = " (avg(i.damages) >= ?) and (avg(i.damages) <=  ?) ";  
+        String totDamagesQuery = " (total(i.damages) >= ?) and (total(i.damages) <= ?) ";
+        String dateQuery = " (a.accident_date >= '?') and (a.accident_date <= '?') ";
+        int critNum = 0; 		//keep track of filters, used for adding "having" and "and" to query strings
+        if(minDate != null) {
+        	critNum++;
+        	
+        }
+        /*try{
+            //rs = 
             
         }catch(SQLException e) {
             System.out.println(e.getMessage());
         }
-        return peeps;
+       return results;*/
     }        
 }
