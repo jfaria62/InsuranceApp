@@ -121,13 +121,67 @@ public class Connect {
     	//Accidents results[] = new Accidents[]; 
     	People peeps = new People();
         String mainQuery = "select a.aid, a.accident_date, a.city, a.state FROM involvements i, accidents a where a.aid == i.aid group by a.aid ";
-        String avgDamagesQuery = " (avg(i.damages) >= ?) and (avg(i.damages) <=  ?) ";  
-        String totDamagesQuery = " (total(i.damages) >= ?) and (total(i.damages) <= ?) ";
-        String dateQuery = " (a.accident_date >= '?') and (a.accident_date <= '?') ";
+        String minAvgQuery = " (avg(i.damages) <=  ?) ";  
+        String maxAvgQuery = " (avg(i.damages) >= ?) ";  
+        String minTotQuery = " (total(i.damages) <= ?) ";
+        String maxTotQuery = " (total(i.damages) >= ?) ";
+        String minDateQuery = " (a.accident_date <= '?') ";        
+        String maxDateQuery = " (a.accident_date >= '?') ";
         int critNum = 0; 		//keep track of filters, used for adding "having" and "and" to query strings
+        //check if user included filter criteria and append to mainQuery as needed
         if(minDate != null) {
-        	critNum++;
-        	
+        	if(critNum == 0) {
+        		mainQuery += "HAVING";
+        	}
+        	else {
+        		mainQuery += "AND" + minDateQuery;
+        	}
+        	critNum++;        	
+        }
+        if(maxDate != null) {
+        	if(critNum == 0) {
+        		mainQuery += "HAVING";
+        	}
+        	else {
+        		mainQuery += "AND" + maxDateQuery;
+        	}
+        	critNum++;        	
+        }
+        if(minAvg != null) {
+        	if(critNum == 0) {
+        		mainQuery += "HAVING";
+        	}
+        	else {
+        		mainQuery += "AND" + minAvgQuery;
+        	}
+        	critNum++;        	
+        }
+        if(maxAvg != null) {
+        	if(critNum == 0) {
+        		mainQuery += "HAVING";
+        	}
+        	else {
+        		mainQuery += "AND" + maxAvgQuery;
+        	}
+        	critNum++;        	
+        }
+        if(minTot != null) {
+        	if(critNum == 0) {
+        		mainQuery += "HAVING";
+        	}
+        	else {
+        		mainQuery += "AND" + minTotQuery;
+        	}
+        	critNum++;        	
+        }
+        if(maxTot != null) {
+        	if(critNum == 0) {
+        		mainQuery += "HAVING";
+        	}
+        	else {
+        		mainQuery += "AND" + maxTotQuery;
+        	}
+        	critNum++;        	
         }
         /*try{
             //rs = 
@@ -135,6 +189,7 @@ public class Connect {
         }catch(SQLException e) {
             System.out.println(e.getMessage());
         }
-       return results;*/
+        return results;*/
+        System.out.print(mainQuery);
     }        
 }
