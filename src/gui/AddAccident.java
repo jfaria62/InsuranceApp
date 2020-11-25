@@ -151,7 +151,7 @@ public class AddAccident extends Application{
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (!newValue.matches("\\d{0,7}([\\.]\\d{0,4})?")) {                	
-                	tNthDriverDamages.clear();;
+                	tNthDriverDamages.clear();
                 	lNthDriverDamages.setText("*Only Dollar Amount Damages*");
                 }
                 else {
