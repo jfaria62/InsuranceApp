@@ -8,9 +8,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import classes.Accidents;
-import classes.People;
 
 public class Connect {
     private static Connection conn;
@@ -32,27 +33,30 @@ public class Connect {
             stmt = conn.createStatement();
             System.out.println("Connection to SQLite has been established.");            
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
+            System.out.println("\nconnect1 " + e.getMessage());
+        }/* finally {
             try {
                 if (conn != null) {
                     conn.close();
+                    System.out.print("problem here");
                 }
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                System.out.println("\nconnect " + ex.getMessage());
             }
-        }
-    }
+        }  */      
+        
+    }//END CONNECT
     
     public void addAccident(Date date, String city, String state, String vin[], Float damages[], String driver_ssn[], int numVehicles){
-        String sqlAccidents = "Insert into accidents (aid, accident_date, city, state) values(?, ?, ?, ?)";
+       
+    	String sqlAccidents = "Insert into accidents (aid, accident_date, city, state) values(?, ?, ?, ?)";
         String sqlInvolvements = "Insert into involvements (aid, vin, damages, driver_ssn) values(?, ?,?,?)";
         int aid, i;
         //Add Accident
         //date city state -> Accidents (generate aid)
         //VIN, damages, driver_ssn -> Involvements
         try{
-            rs = stmt.executeQuery("select count(*) from accidents");   //get number of accidents currently in table
+        	rs = stmt.executeQuery("select count(*) from accidents");   //get number of accidents currently in table
             rs.next();
             aid = rs.getInt(1) + 1;                                     //create aid for new accident to be added 
             System.out.print("\nAccident #" + aid + " being added");
@@ -79,6 +83,8 @@ public class Connect {
             System.out.println(e.getMessage());
         }
     }
+     /*   
+    }//END ADDACCIDENT
 
     public Accidents[] getAccidentsById(int aid) {   	
        
@@ -106,7 +112,7 @@ public class Connect {
 	    	   records[i].setDate(rs.getDate("accident_date"));  
 	    	   records[i].setLocation(rs.getString("city"), rs.getString("state"));
 	    	   records[i].setDamages(rs.getFloat("damages")); 
-	    	    
+	    	   i++;
             }
 
 	       return records;   
@@ -114,82 +120,116 @@ public class Connect {
            System.out.println(e.getMessage());
        }
 	return null;
-   }
+   }//END GETACCIDENTBYID */
+
 
     //change return type to Accidents[]
-    public void getByCriteria(Date minDate, Date maxDate, Float minAvg, Float maxAvg, Float minTot, Float maxTot){
-    	//Accidents results[] = new Accidents[]; 
-    	People peeps = new People();
-        String mainQuery = "select a.aid, a.accident_date, a.city, a.state FROM involvements i, accidents a where a.aid == i.aid group by a.aid ";
-        String minAvgQuery = " (avg(i.damages) <=  ?) ";  
-        String maxAvgQuery = " (avg(i.damages) >= ?) ";  
-        String minTotQuery = " (total(i.damages) <= ?) ";
-        String maxTotQuery = " (total(i.damages) >= ?) ";
-        String minDateQuery = " (a.accident_date <= '?') ";        
-        String maxDateQuery = " (a.accident_date >= '?') ";
+    public Accidents[] getByCriteria(Date minDate, Date maxDate, Float minAvg, Float maxAvg, Float minTot, Float maxTot){
+    	String mainQuery = "select a.aid, date(a.accident_date) as date, a.city, a.state FROM involvements i, accidents a where a.aid == i.aid group by a.aid ";
+       
+        int numRows = 0;
+        int i = 0;
+       
         int critNum = 0; 		//keep track of filters, used for adding "having" and "and" to query strings
         //check if user included filter criteria and append to mainQuery as needed
         if(minDate != null) {
         	if(critNum == 0) {
-        		mainQuery += "HAVING";
+        		mainQuery += "HAVING" + " (a.accident_date >= '"+ minDate + "') ";
         	}
         	else {
-        		mainQuery += "AND" + minDateQuery;
+        		mainQuery += "AND" + " (a.accident_date >= '"+ minDate + "') ";
         	}
         	critNum++;        	
         }
         if(maxDate != null) {
         	if(critNum == 0) {
-        		mainQuery += "HAVING";
+        		mainQuery += "HAVING" + " (a.accident_date <= '" + maxDate + "') ";
         	}
         	else {
-        		mainQuery += "AND" + maxDateQuery;
+        		mainQuery += "AND" + " (a.accident_date <= '" + maxDate + "') ";
         	}
         	critNum++;        	
         }
         if(minAvg != null) {
         	if(critNum == 0) {
-        		mainQuery += "HAVING";
+        		mainQuery += "HAVING" + " (avg(i.damages) >= "+ minAvg +") ";
         	}
         	else {
-        		mainQuery += "AND" + minAvgQuery;
+        		mainQuery += "AND" + " (avg(i.damages) >= "+ minAvg +") ";
         	}
         	critNum++;        	
         }
         if(maxAvg != null) {
         	if(critNum == 0) {
-        		mainQuery += "HAVING";
+        		mainQuery += "HAVING"  + " (avg(i.damages) <=  "+ maxAvg +") ";
         	}
         	else {
-        		mainQuery += "AND" + maxAvgQuery;
+        		mainQuery += "AND" + " (avg(i.damages) <=  "+ maxAvg +") ";
         	}
         	critNum++;        	
         }
         if(minTot != null) {
         	if(critNum == 0) {
-        		mainQuery += "HAVING";
+        		mainQuery += "HAVING" + " (total(i.damages) >= "+ minTot + ") ";
         	}
         	else {
-        		mainQuery += "AND" + minTotQuery;
+        		mainQuery += "AND" + " (total(i.damages) >= "+ minTot + ") ";
         	}
         	critNum++;        	
         }
         if(maxTot != null) {
         	if(critNum == 0) {
-        		mainQuery += "HAVING";
+        		mainQuery += "HAVING" + " (total(i.damages) <= "+ maxTot +") ";
         	}
         	else {
-        		mainQuery += "AND" + maxTotQuery;
+        		mainQuery += "AND" + " (total(i.damages) <= "+ maxTot +") ";
         	}
         	critNum++;        	
         }
-        /*try{
-            //rs = 
-            
-        }catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return results;*/
-        System.out.print(mainQuery);
-    }        
+        PreparedStatement prep;
+        //create prepared statement to insert to accidents table
+        //query returns multiple rows with multiple columns
+        try {
+        	rs = stmt.executeQuery("select count(*) FROM accidents");
+        	rs.next();        	
+ 		    numRows = rs.getInt(1);
+ 		    Accidents[] records = new Accidents[numRows];
+ 		    i = 0;
+			prep = conn.prepareStatement(mainQuery);			
+			rs = prep.executeQuery();			
+			while(rs.next()){
+				records[i] = new Accidents();
+				String strDate = rs.getString("date");
+				Date dDate = Date.valueOf(strDate);
+				records[i].setDate(dDate);  
+				records[i].setLocation(rs.getString("city"), rs.getString("city"));
+	    	    i++;
+            }			
+			prep.close();
+			return records;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.print("\n" + e);
+			e.printStackTrace();
+		}       
+        System.out.print("\n" + mainQuery);
+		return null;
+    } //END GETBYCRITERIA 
+    
+   /* public void testMeth() {      	
+    	int numRows = 0; 
+    	try {
+			//System.out.print("\nQuery: select count(*) FROM (" + mainQuery + ")\n");
+    		rs = stmt.executeQuery("select count(*) FROM (" + mainQuery + ")"); 
+         	System.out.print("\n\ttest2");
+         	rs.next();        	
+  		    numRows = rs.getInt(1);
+  		    System.out.print("\nrows #: " + numRows);  		    
+  		    
+	    }catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.print("\nhere " + e);
+			e.printStackTrace();
+		}   
+    }*/
 }

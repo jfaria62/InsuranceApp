@@ -37,7 +37,6 @@ public class AddAccident extends Application{
 	@Override
 	public void start(Stage primaryStage) {
 		Connect conn = new Connect();
-		Connect.connect();
 		
 		GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -256,7 +255,7 @@ public class AddAccident extends Application{
                 	damages[numVehicles] = Float.parseFloat(tOwnerDamages.getText());
                 	conn.addAccident(accidentDate, city, state, vin, damages, driver_ssn, numVehicles);
                 	
-                	System.out.print("numV " + numVehicles + "\nssn " + ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages "+ damages[numVehicles]);
+                	//System.out.print("numV " + numVehicles + "\nssn " + ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages "+ damages[numVehicles]);
                 	MainMenu menu = new MainMenu();  
             		menu.start(primaryStage);           
             	}

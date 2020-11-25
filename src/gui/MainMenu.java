@@ -18,6 +18,7 @@ import server.Connect;
  
 public class MainMenu extends Application {
 	public static void main(String[] args) {
+		Connect.connect();
 		launch(args);
     }
     
