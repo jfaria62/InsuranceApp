@@ -186,34 +186,42 @@ public class Connect {
         	}
         	critNum++;        	
         }
+        
         PreparedStatement prep;
         //create prepared statement to insert to accidents table
         //query returns multiple rows with multiple columns
         try {
-        	rs = stmt.executeQuery("select count(*) FROM accidents");
+        	rs = stmt.executeQuery("select count(*) FROM (" + mainQuery + ")");
         	rs.next();        	
  		    numRows = rs.getInt(1);
- 		    Accidents[] records = new Accidents[numRows];
- 		    i = 0;
-			prep = conn.prepareStatement(mainQuery);			
-			rs = prep.executeQuery();			
-			while(rs.next()){
-				records[i] = new Accidents();
-				String strDate = rs.getString("date");
-				Date dDate = Date.valueOf(strDate);
-				records[i].setDate(dDate);  
-				records[i].setLocation(rs.getString("city"), rs.getString("city"));
-	    	    i++;
-            }			
-			prep.close();
-			return records;
+ 		    System.out.print("\nRows: " + numRows);
+			if(numRows > 0) {
+				Accidents[] records = new Accidents[numRows];
+	 		    i = 0;
+	 		    System.out.print("\nQuery: " +mainQuery);
+				prep = conn.prepareStatement(mainQuery);			
+				rs = prep.executeQuery();			
+				while(rs.next()){
+					records[i] = new Accidents();
+					String strDate = rs.getString("date");
+					Date dDate = Date.valueOf(strDate);
+					records[i].setID(rs.getInt("aid"));
+					records[i].setDate(dDate);  
+					records[i].setLocation(rs.getString("city"), rs.getString("state"));
+					
+		    	    i++;
+	            }			
+				prep.close();
+				return records;
+			}
+			return null;
+ 		    
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			System.out.print("\n" + e);
 			e.printStackTrace();
 		}       
-        System.out.print("\n" + mainQuery);
-		return null;
+        return null;
     } //END GETBYCRITERIA 
     
    /* public void testMeth() {      	

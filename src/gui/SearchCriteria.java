@@ -4,9 +4,11 @@ package gui;
 import java.sql.Date;
 import java.time.LocalDate;
 
+import classes.Accidents;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,7 +28,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 public class SearchCriteria extends Application{
-	//Accidents data = new Accidents();
+	Accidents[] data;
 	Date accidentDate = null;
 	String city = null;
 	String state = null;
@@ -36,14 +38,15 @@ public class SearchCriteria extends Application{
 	Float maxTot = null;
 	Date minDate = null;
 	Date maxDate = null;
-	
-	ListView<String> list = new ListView<String>();
-	ObservableList<String> searchResults;
-	
+			
 	@Override
 	public void start(Stage primaryStage){
 		Connect conn = new Connect();
 		
+		final ListView<String> list = new ListView<String>();
+		ObservableList<String> items = FXCollections.observableArrayList();
+		list.setPrefSize(200, 250);
+		        
 		GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -114,7 +117,6 @@ public class SearchCriteria extends Application{
 		datePicker.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				System.out.print("/ndatepikr");
 				LocalDate date = datePicker.getValue();
 		        Date aDate = Date.valueOf(LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth())); 
 				minDate = aDate;		       
@@ -133,11 +135,15 @@ public class SearchCriteria extends Application{
 		searchBtn.setOnAction(new EventHandler<ActionEvent>() {
         	@Override
             public void handle(ActionEvent e) {
+        		int i = 0;
         		//reset vars in case user deleted since last search click
         		minAvg = null;
         		maxAvg = null;
         		minTot = null;
         		maxTot = null;
+        		data = null;
+        		grid.getChildren().remove(list);
+        		items.clear();
         		
         		if(!tMinAvg.getText().isEmpty()) {
         			minAvg = Float.parseFloat(tMinAvg.getText());            		
@@ -151,12 +157,25 @@ public class SearchCriteria extends Application{
             	if(!tMaxTot.getText().isEmpty()) {
             		maxTot = Float.parseFloat(tMaxTot.getText());            		      		
         		}
-            	conn.getByCriteria(minDate, maxDate, minAvg, maxAvg, minTot, maxTot);
             	
-            	//conn.getByCriteria(minDate, maxDate, minAvg, maxAvg, minTot, maxTot);
-            	//Accidents data[] = conn.getByCriteria(minDate, maxDate, minAvg, maxAvg, minTot, maxTot);
-            	//System.out.print(data[0].getState());
-        	}
+            	data = conn.getByCriteria(minDate, maxDate, minAvg, maxAvg, minTot, maxTot);
+            	if(data == null) {
+            		Label lNoResults = new Label("No Results");
+            		grid.add(lNoResults, 0, 6);
+            	}else {
+            		while(i < data.length) {
+                		System.out.print("ID: " + data[i].getID() + "\t Accident Date: " + data[i].getDate() + "\t City: " + data[i].getCity() + "\t State: " + data[i].getState());
+                    	
+                		items.add("ID: " + data[i].getID() 
+                				+ "\t Accident Date: " + data[i].getDate() + "\t City: " 
+                				+ data[i].getCity() + "\t State: " + data[i].getState());                	
+                    	i++;
+                	}
+                	list.setItems(items);        		
+                	grid.add(list, 0, 6,5,1);
+                }
+            	/**/
+           	}
     	});      
 		
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
