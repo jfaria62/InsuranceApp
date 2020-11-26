@@ -29,7 +29,6 @@ import javafx.scene.text.Text;
 
 public class SearchCriteria extends Application{
 	Accidents[] data;
-	Date accidentDate = null;
 	String city = null;
 	String state = null;
 	Float minAvg = null;
@@ -76,6 +75,14 @@ public class SearchCriteria extends Application{
 		datePicker.getEditor().setDisable(true);
 		datePicker2.getEditor().setDisable(true);
 		
+		returnMainBtn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				MainMenu menu = new MainMenu();
+				menu.start(primaryStage);
+			}
+		});  
+	 
 		//FOLLOWING LISTENERS ALLOW FOR ONLY NUMERIC USER INPUT
 		tMinAvg.textProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -164,8 +171,6 @@ public class SearchCriteria extends Application{
             		grid.add(lNoResults, 0, 6);
             	}else {
             		while(i < data.length) {
-                		System.out.print("ID: " + data[i].getID() + "\t Accident Date: " + data[i].getDate() + "\t City: " + data[i].getCity() + "\t State: " + data[i].getState());
-                    	
                 		items.add("ID: " + data[i].getID() 
                 				+ "\t Accident Date: " + data[i].getDate() + "\t City: " 
                 				+ data[i].getCity() + "\t State: " + data[i].getState());                	
@@ -174,7 +179,6 @@ public class SearchCriteria extends Application{
                 	list.setItems(items);        		
                 	grid.add(list, 0, 6,5,1);
                 }
-            	/**/
            	}
     	});      
 		
@@ -195,7 +199,6 @@ public class SearchCriteria extends Application{
 		grid.add(lToLabel3, 2, 4);
 		grid.add(datePicker2 , 3, 4);
 		grid.add(searchBtn, 0, 5);
-		//grid.add(accidentList, 0, 6);
 		
 		Scene scene = new Scene(grid, 700, 600);
 		primaryStage.setScene(scene);
