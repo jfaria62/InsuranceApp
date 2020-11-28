@@ -38,7 +38,7 @@ public class Connect {
     }//END CONNECT
     
     public void addAccident(Date date, String city, String state, String vin[], Float damages[], String driver_ssn[], int numVehicles){
-       
+        Connect.connect();
     	String sqlAccidents = "Insert into accidents (aid, accident_date, city, state) values(?, ?, ?, ?)";
         String sqlInvolvements = "Insert into involvements (aid, vin, damages, driver_ssn) values(?, ?,?,?)";
         int aid, i;
@@ -49,20 +49,21 @@ public class Connect {
             aid = rs.getInt(1) + 1;                                     //create aid for new accident to be added 
             PreparedStatement prep = conn.prepareStatement(sqlAccidents);   //create prepared statement to insert to accidents table
             prep.setInt(1, aid);                                            //set info for preparedStatement
-            prep.setDate(2, date);
+            prep.setString(2, date.toString());
             prep.setString(3, city);
             prep.setString(4, state);
+            System.out.print("\nAccident INFO\naid: " + aid+ "\ndate: " + date + "\ncity/State: "+ city + state);
             try {    			
     			prep.executeUpdate();
-    			System.out.print("\nAccident #" + aid + " being added" );
+    			System.out.print("\nAccident #" + date + " being added" );
                 
     		} catch (SQLException e) {
     			// TODO Auto-generated catch block
     			e.printStackTrace();
-    		}            
+    		} 
              //insert new rows into involvements for each vehicle in the reported accident
-            for(i = 0; i < numVehicles; i++){  
-            	System.out.print("\nexecuting Involvements update vin: " + vin[i]);
+            for(i = 0; i <= numVehicles; i++){  
+                System.out.print("\nDriver INFO\naid: " + aid+ "\nssn: " + driver_ssn[i]+ "\nvin: " + vin[i]+ "\ndamages: "+ damages[i]);
                  
                 prep = conn.prepareStatement(sqlInvolvements);
                 prep.setInt(1, aid);
@@ -78,6 +79,7 @@ public class Connect {
         		}     
             }
             prep.close();
+            conn.close();
             //stmt.executeUpdate("Insert into accidents (date, city, state) values("+ date + ", " + city + ", " + state + ")");
             //stmt2.executeUpdate("Insert into involvements (vin, damages, driver_ssn) values " + vin + ", " + damages + ", " + driver_ssn + ")");
         }catch (SQLException e) {
@@ -85,7 +87,8 @@ public class Connect {
         }
         
     }//END ADDACCIDENT
-
+    
+/*
     public Accidents[] getAccidentsById(int aid) {   	
        
 	   int count;
@@ -109,7 +112,7 @@ public class Connect {
 	       
 	       rs = prep.executeQuery();
 	       while(rs.next()){
-	    	   records[i].setDate(rs.getDate("accident_date"));  
+	    	   records[i].setDate(rs.getString("accident_date"));  
 	    	   records[i].setLocation(rs.getString("city"), rs.getString("state"));
 	    	   records[i].setDamages(rs.getFloat("damages")); 
 	    	   i++;
@@ -125,6 +128,7 @@ public class Connect {
 
     //change return type to Accidents[]
     public Accidents[] getByCriteria(Date minDate, Date maxDate, Float minAvg, Float maxAvg, Float minTot, Float maxTot){
+    	Connect.connect();
     	String mainQuery = "select a.aid, date(a.accident_date) as date, a.city, a.state FROM involvements i, accidents a where a.aid == i.aid group by a.aid ";
        
         int numRows = 0;
@@ -204,14 +208,15 @@ public class Connect {
 				while(rs.next()){
 					records[i] = new Accidents();
 					String strDate = rs.getString("date");
-					Date dDate = Date.valueOf(strDate);
+					//Date dDate = Date.valueOf(strDate);				//PROBLEM HERE
 					records[i].setID(rs.getInt("aid"));
-					records[i].setDate(dDate);  
+					records[i].setDate(strDate);  
 					records[i].setLocation(rs.getString("city"), rs.getString("state"));
 					
 		    	    i++;
 	            }			
 				prep.close();
+				conn.close();
 				return records;
 			}
 			return null;
