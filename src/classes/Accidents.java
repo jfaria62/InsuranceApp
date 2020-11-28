@@ -60,6 +60,6 @@ public class Accidents {
     }
 
     public void setDate(Date aDate){
-        this.accident_date = aDate;
+    	this.accident_date = aDate;
     }
 }
