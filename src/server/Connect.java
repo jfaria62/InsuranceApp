@@ -33,18 +33,8 @@ public class Connect {
             stmt = conn.createStatement();
             System.out.println("Connection to SQLite has been established.");            
         } catch (SQLException e) {
-            System.out.println("\nconnect1 " + e.getMessage());
-        }/* finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                    System.out.print("problem here");
-                }
-            } catch (SQLException ex) {
-                System.out.println("\nconnect " + ex.getMessage());
-            }
-        }  */      
-        
+            System.out.println(e.getMessage());
+        }
     }//END CONNECT
     
     public void addAccident(Date date, String city, String state, String vin[], Float damages[], String driver_ssn[], int numVehicles){
@@ -52,29 +42,40 @@ public class Connect {
     	String sqlAccidents = "Insert into accidents (aid, accident_date, city, state) values(?, ?, ?, ?)";
         String sqlInvolvements = "Insert into involvements (aid, vin, damages, driver_ssn) values(?, ?,?,?)";
         int aid, i;
-        //Add Accident
-        //date city state -> Accidents (generate aid)
-        //VIN, damages, driver_ssn -> Involvements
+        
         try{
         	rs = stmt.executeQuery("select count(*) from accidents");   //get number of accidents currently in table
             rs.next();
             aid = rs.getInt(1) + 1;                                     //create aid for new accident to be added 
-            System.out.print("\nAccident #" + aid + " being added");
             PreparedStatement prep = conn.prepareStatement(sqlAccidents);   //create prepared statement to insert to accidents table
             prep.setInt(1, aid);                                            //set info for preparedStatement
             prep.setDate(2, date);
             prep.setString(3, city);
             prep.setString(4, state);
-            prep.executeUpdate();
-            System.out.print("\nDate: " + date + " city: " + city + "state ");
-            //insert new rows into involvements for each vehicle in the reported accident
-            for(i = 0; i < numVehicles; i++){   
+            try {    			
+    			prep.executeUpdate();
+    			System.out.print("\nAccident #" + aid + " being added" );
+                
+    		} catch (SQLException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}            
+             //insert new rows into involvements for each vehicle in the reported accident
+            for(i = 0; i < numVehicles; i++){  
+            	System.out.print("\nexecuting Involvements update vin: " + vin[i]);
+                 
                 prep = conn.prepareStatement(sqlInvolvements);
                 prep.setInt(1, aid);
                 prep.setString(2, vin[i]);
                 prep.setFloat(3, damages[i]);
                 prep.setString(4, driver_ssn[i]);
-                prep.executeUpdate();
+                //System.out.print("\n"+prep.toString());
+                try {        			
+        			prep.executeUpdate();
+        		} catch (SQLException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}     
             }
             prep.close();
             //stmt.executeUpdate("Insert into accidents (date, city, state) values("+ date + ", " + city + ", " + state + ")");
@@ -82,8 +83,7 @@ public class Connect {
         }catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
-     /*   
+        
     }//END ADDACCIDENT
 
     public Accidents[] getAccidentsById(int aid) {   	

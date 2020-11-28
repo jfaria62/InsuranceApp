@@ -25,7 +25,7 @@ import javafx.scene.text.Text;
 
 public class AddAccident extends Application{
 
-	int numVehicles = 0;
+	int numVehicles;
 	Date accidentDate;
 	String city;
 	String state;
@@ -35,9 +35,9 @@ public class AddAccident extends Application{
 	String driver_ssn[] = new String[10];
 	
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) {		
 		Connect conn = new Connect();
-		
+		numVehicles = 0;
 		GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -54,8 +54,6 @@ public class AddAccident extends Application{
         TextField tOwnerDamages = new TextField();
         Label lOwnerVin= new Label("Your Vehicle Vin: ");
         TextField tOwnerVin= new TextField();
-        //TextFormatter fmt = new 
-       // tOwnerSsn.setTextFormatter(fmt);
        
         Label lNthDriverSsn = new Label("Driver SSN: \n###-##-#### format");
         TextField tNthDriverSsn = new TextField();
@@ -74,6 +72,97 @@ public class AddAccident extends Application{
         Button submitNewDriverBtn = new Button("Submit Driver");
         Button cancelBtn = new Button("Cancel");        
                 
+        //add all elements to current scene
+  		Text scenetitle = new Text("Create An Accident Report");
+  		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+  		grid.add(backMainMenuBtn, 0, 0, 2, 1);
+  		grid.add(scenetitle, 0, 1, 3, 1);
+  	    grid.add(lAInfo, 0, 2);
+  	    grid.add(lCity, 0, 3);
+  	    grid.add(tCity, 1, 3);
+  	    grid.add(lState, 0, 4);
+  	    grid.add(tState, 1, 4);
+  		grid.add(lDate, 0, 5);
+  		grid.add(dateBox, 1, 5, 2, 1);	
+  		grid.add(lOwnerSsn, 5, 3);
+  		grid.add(tOwnerSsn, 6, 3);
+  		grid.add(lOwnerDamages, 5, 4);
+  	    grid.add(tOwnerDamages, 6, 4);
+  	    grid.add(lOwnerVin, 5, 5);
+  	    grid.add(tOwnerVin, 6, 5);
+  	    grid.add(addVehicleBtn, 0, 6);	
+  	    grid.add(submitBtn, 6, 6);
+  	    
+  	    //make sure ssn is formatted correctly
+  	    tNthDriverSsn.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> ov, final String oldValue, final String newValue) {
+                String s = tNthDriverSsn.getText().toUpperCase();
+                tNthDriverSsn.setText(s); 
+                
+                if (tNthDriverSsn.getText().length() == 3) {
+                    s = tNthDriverSsn.getText() + "-";
+                    tNthDriverSsn.setText(s);
+                }
+                if (tNthDriverSsn.getText().length() == 6) {
+                    s = tNthDriverSsn.getText() + "-";
+                    tNthDriverSsn.setText(s);
+                }
+                if (tNthDriverSsn.getText().length() > 11) {
+                	s = tNthDriverSsn.getText().substring(0, 11);
+                	tNthDriverSsn.setText(s);
+                }
+            }
+        });
+  	    
+  	    //set limit to vin number input to 12 chars
+  	    tNthDriverVin.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> ov, final String oldValue, final String newValue) {
+                String s = tNthDriverVin.getText().toUpperCase();
+                tNthDriverVin.setText(s); 
+                if (tNthDriverVin.getText().length() > 12) {
+                    s = tNthDriverVin.getText().substring(0, 12).toUpperCase();
+                    tNthDriverVin.setText(s);
+                }
+            }
+        });
+  	    
+  		//make sure ssn is formatted correctly
+  	    tOwnerSsn.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> ov, final String oldValue, final String newValue) {
+                String s = tOwnerSsn.getText().toUpperCase();
+                tOwnerSsn.setText(s); 
+                
+                if (tOwnerSsn.getText().length() == 3) {
+                    s = tOwnerSsn.getText() + "-";
+                    tOwnerSsn.setText(s);
+                }
+                if (tOwnerSsn.getText().length() == 6) {
+                    s = tOwnerSsn.getText() + "-";
+                    tOwnerSsn.setText(s);
+                }
+                if (tOwnerSsn.getText().length() > 11) {
+                	s = tOwnerSsn.getText().substring(0, 11);
+                	tOwnerSsn.setText(s);
+                }
+            }
+        });
+  	    
+  	    //set limit to vin number input to 12 chars
+  	    tOwnerVin.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> ov, final String oldValue, final String newValue) {
+                String s = tOwnerVin.getText().toUpperCase();
+                tOwnerVin.setText(s); 
+                if (tOwnerVin.getText().length() > 12) {
+                    s = tOwnerVin.getText().substring(0, 12).toUpperCase();
+                    tOwnerVin.setText(s);
+                }
+            }
+        });
+  	    
         //makes sure State text stays below 2 characters and capitalizes
         tState.textProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -100,7 +189,6 @@ public class AddAccident extends Application{
         addVehicleBtn.setOnAction(new EventHandler<ActionEvent>() {
         	@Override
             public void handle(ActionEvent e) {        		
-            	numVehicles++;
             	GridPane grid2 = new GridPane();            	
             	grid2.setAlignment(Pos.CENTER);
                 grid2.setHgap(10);
@@ -127,8 +215,7 @@ public class AddAccident extends Application{
 				LocalDate date = datePicker.getValue();
 		        Date aDate = Date.valueOf(LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth())); 
 				accidentDate = aDate;
-		        System.err.println("Selected date: " + accidentDate);
-		     }
+			}
 		});
 		
 		//makes sure damages field is numeric
@@ -159,26 +246,7 @@ public class AddAccident extends Application{
             }
         });
 		
-		//add all elements to current scene
-		Text scenetitle = new Text("Create An Accident Report");
-		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-		grid.add(backMainMenuBtn, 0, 0, 2, 1);
-		grid.add(scenetitle, 0, 1, 3, 1);
-	    grid.add(lAInfo, 0, 2);
-	    grid.add(lCity, 0, 3);
-	    grid.add(tCity, 1, 3);
-	    grid.add(lState, 0, 4);
-	    grid.add(tState, 1, 4);
-		grid.add(lDate, 0, 5);
-		grid.add(dateBox, 1, 5, 2, 1);	
-		grid.add(lOwnerSsn, 5, 3);
-		grid.add(tOwnerSsn, 6, 3);
-		grid.add(lOwnerDamages, 5, 4);
-	    grid.add(tOwnerDamages, 6, 4);
-	    grid.add(lOwnerVin, 5, 5);
-	    grid.add(tOwnerVin, 6, 5);
-	    grid.add(addVehicleBtn, 0, 6);	
-	    grid.add(submitBtn, 6, 6);
+		
 		
 		Button otherDriverBtn = new Button();
 		otherDriverBtn.setText("Add Another Involved Vehicle");
@@ -253,7 +321,13 @@ public class AddAccident extends Application{
             		ssn[numVehicles] = tOwnerSsn.getText();
             		vin[numVehicles] = tOwnerVin.getText();
                 	damages[numVehicles] = Float.parseFloat(tOwnerDamages.getText());
-                	conn.addAccident(accidentDate, city, state, vin, damages, driver_ssn, numVehicles);
+                	System.out.print("\nAccident Info \ncity/state: " + city + state 
+                			+ "\ndate: " + accidentDate);
+                	for(int i = 0; i < numVehicles; i++) {
+                		System.out.print("\nDriverInfo \nSSN: " + ssn[i] + "\nvin: " + vin[i]
+                				+ "\ndamages: " + damages[i]);                            	
+                	}
+                	//conn.addAccident(accidentDate, city, state, vin, damages, driver_ssn, numVehicles);
                 	
                 	//System.out.print("numV " + numVehicles + "\nssn " + ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages "+ damages[numVehicles]);
                 	MainMenu menu = new MainMenu();  
@@ -298,15 +372,16 @@ public class AddAccident extends Application{
                 	tNthDriverSsn.clear();
                 	tNthDriverDamages.clear();
                 	tNthDriverVin.clear();
-                	System.out.print(ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages"+ damages[numVehicles]);
+                	
+                	System.out.print(ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages "+ damages[numVehicles]);
+                	numVehicles++;
                 	primaryStage.setScene(scene);
                 	primaryStage.show();                
             	}            	
         	}
-        });
+        });//end submitNewDriverBtn logic
         
 		primaryStage.setScene(scene);
 		primaryStage.show();
-	}	
-	
+	}		
 }
