@@ -32,7 +32,6 @@ public class AddAccident extends Application{
 	String vin[] = new String[10];
 	String ssn[] = new String[10];
 	Float damages[] = new Float[10];
-	String driver_ssn[] = new String[10];
 	
 	@Override
 	public void start(Stage primaryStage) {		
@@ -321,13 +320,13 @@ public class AddAccident extends Application{
             		ssn[numVehicles] = tOwnerSsn.getText();
             		vin[numVehicles] = tOwnerVin.getText();
                 	damages[numVehicles] = Float.parseFloat(tOwnerDamages.getText());
-                	System.out.print("\nAccident Info \ncity/state: " + city + state 
+                	/*System.out.print("\nAccident Info \ncity/state: " + city + state 
                 			+ "\ndate: " + accidentDate);
-                	for(int i = 0; i < numVehicles; i++) {
+                	for(int i = 0; i <= numVehicles; i++) {
                 		System.out.print("\nDriverInfo \nSSN: " + ssn[i] + "\nvin: " + vin[i]
                 				+ "\ndamages: " + damages[i]);                            	
-                	}
-                	//conn.addAccident(accidentDate, city, state, vin, damages, driver_ssn, numVehicles);
+                	}*/
+                	conn.addAccident(accidentDate, city, state, vin, damages, ssn, numVehicles);
                 	
                 	//System.out.print("numV " + numVehicles + "\nssn " + ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages "+ damages[numVehicles]);
                 	MainMenu menu = new MainMenu();  

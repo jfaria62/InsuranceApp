@@ -3,7 +3,7 @@ import java.sql.Date;
 
 public class Accidents {
     private int aid;
-    private Date accident_date;
+    private String accident_date;
     private String city;
     private String state;
     private Float damages;
@@ -11,7 +11,7 @@ public class Accidents {
 
     public Accidents(){}
 
-    public Accidents(Date a_Date, String city, String state, Float damages, String ssn){        
+    public Accidents(String a_Date, String city, String state, Float damages, String ssn){        
         setLocation(city, state);
         setDate(a_Date);
         setDamages(damages);
@@ -55,11 +55,11 @@ public class Accidents {
         this.city = city;
         this.state = state;
     }
-    public Date getDate(){
+    public String getDate(){
         return this.accident_date;
     }
 
-    public void setDate(Date aDate){
-    	this.accident_date = aDate;
+    public void setDate(String strDate){
+    	this.accident_date = strDate;
     }
 }
