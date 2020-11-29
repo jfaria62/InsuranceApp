@@ -1,13 +1,13 @@
 package classes;
-public class autos {
+public class Autos {
     String vin;
     String make;
     int year;
     String agent_ssn;
     String owner_ssn;
 
-    public autos(){};
-    public autos(String vin, String make, int year, String agent_ssn, String owner_ssn){
+    public Autos(){};
+    public Autos(String vin, String make, int year, String agent_ssn, String owner_ssn){
         setVin(vin);
         setMake(make);
         setYear(year);

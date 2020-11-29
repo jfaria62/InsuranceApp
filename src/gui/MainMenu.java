@@ -42,7 +42,16 @@ public class MainMenu extends Application {
         
         Button addAccidentBtn= new Button("Add An Accident");
         Button searchByCriteriaBtn = new Button("Search By Criteria Range");
-                        
+        Button searchByIdBtn = new Button("Search By Accident ID");                
+        
+        searchByIdBtn.setOnAction(new EventHandler<ActionEvent>() {        	 
+            @Override
+            public void handle(ActionEvent e) {
+                SearchById sId = new SearchById();
+               	sId.start(primaryStage);               	
+            }
+        });
+        
         addAccidentBtn.setOnAction(new EventHandler<ActionEvent>() {        	 
             @Override
             public void handle(ActionEvent e) {
@@ -62,8 +71,9 @@ public class MainMenu extends Application {
             }
         });
         
-        grid.add(addAccidentBtn, 0, 3);
-        grid.add(searchByCriteriaBtn, 3, 3);
+        grid.add(addAccidentBtn, 0, 1, 3, 1);
+        grid.add(searchByCriteriaBtn, 0, 3, 3, 1);
+        grid.add(searchByIdBtn, 0, 2, 3, 1);
         Text scenetitle = new Text("Welcome");
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(scenetitle, 0, 0, 2, 1);

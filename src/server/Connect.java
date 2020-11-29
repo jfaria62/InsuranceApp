@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import classes.Accidents;
+import classes.Record;
 
 public class Connect {
     private static Connection conn;
@@ -88,8 +89,8 @@ public class Connect {
         
     }//END ADDACCIDENT
     
-/*
-    public Accidents[] getAccidentsById(int aid) {   	
+
+    public Record[] getAccidentsById(int aid) {   	
        
 	   int count;
 	   Date accident_date;
@@ -104,7 +105,7 @@ public class Connect {
 		   rs = stmt.executeQuery("select count(*) FROM accidents a, involvements i where a.aid == i.aid and a.aid == ?");
 		   rs.next();
 		   count = rs.getInt(1);
-		   Accidents[] records = new Accidents[count];
+		   Record[] records = new Record[count];
 	       
 		   System.out.println("Count: " + count);
 	   
@@ -123,7 +124,7 @@ public class Connect {
            System.out.println(e.getMessage());
        }
 	return null;
-   }//END GETACCIDENTBYID */
+   }//END GETACCIDENTBYID 
 
 
     //change return type to Accidents[]
