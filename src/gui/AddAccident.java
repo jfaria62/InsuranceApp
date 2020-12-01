@@ -274,23 +274,17 @@ public class AddAccident extends Application{
         submitBtn.setOnAction(new EventHandler<ActionEvent>() {
         	@Override
             public void handle(ActionEvent e) {        		
-        		lOwnerSsn.setText("Driver SSN: \n###-##-#### format");                		
-            	lOwnerDamages.setText("Vehicle Damages: ");                		
+        		lOwnerDamages.setText("Vehicle Damages: ");                		
             	lOwnerVin.setText("Vehicle Vin: "); 
             	lCity.setText("City: ");
 	            lState.setText("State: ");
 	            lDate.setText("*Date of Accident: ");
-            	lOwnerSsn.setTextFill(Color.BLACK);                		
             	lOwnerDamages.setTextFill(Color.BLACK);                		
             	lOwnerVin.setTextFill(Color.BLACK);
 	        	lCity.setTextFill(Color.BLACK);
 	        	lState.setTextFill(Color.BLACK);
 	        	lDate.setTextFill(Color.BLACK);
 	            
-            	if(tOwnerSsn.getText().isEmpty()) {
-        			lOwnerSsn.setTextFill(Color.RED);
-            		lOwnerSsn.setText("*Driver SSN Required");                		
-        		}
             	if(tOwnerDamages.getText().isEmpty()) {
         			lOwnerDamages.setTextFill(Color.RED);
             		lOwnerDamages.setText("*Vehicle Damages Required");                		
@@ -312,23 +306,19 @@ public class AddAccident extends Application{
             		lDate.setText("*Date Required");
             	}
             	//successful data entry and submission
-            	if(!tOwnerVin.getText().isEmpty() && !tOwnerDamages.getText().isEmpty() && !tOwnerSsn.getText().isEmpty()
-            			&& !tState.getText().isEmpty() && !tCity.getText().isEmpty() && dateBox.getChildren( ) != null ){
-            		
+            	if(!tOwnerVin.getText().isEmpty() && !tOwnerDamages.getText().isEmpty() && 
+            			!tState.getText().isEmpty() && !tCity.getText().isEmpty() && dateBox.getChildren( ) != null ){
+            		if(tOwnerSsn.getText().isEmpty()) {
+            			ssn[numVehicles] = null;
+            		}
+            		else { ssn[numVehicles] = tOwnerSsn.getText(); }
             		city = tCity.getText();
             		state = tState.getText();            		
-            		ssn[numVehicles] = tOwnerSsn.getText();
             		vin[numVehicles] = tOwnerVin.getText();
                 	damages[numVehicles] = Float.parseFloat(tOwnerDamages.getText());
-                	/*System.out.print("\nAccident Info \ncity/state: " + city + state 
-                			+ "\ndate: " + accidentDate);
-                	for(int i = 0; i <= numVehicles; i++) {
-                		System.out.print("\nDriverInfo \nSSN: " + ssn[i] + "\nvin: " + vin[i]
-                				+ "\ndamages: " + damages[i]);                            	
-                	}*/
+                	
                 	conn.addAccident(accidentDate, city, state, vin, damages, ssn, numVehicles);
                 	
-                	//System.out.print("numV " + numVehicles + "\nssn " + ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages "+ damages[numVehicles]);
                 	MainMenu menu = new MainMenu();  
             		menu.start(primaryStage);           
             	}
@@ -340,17 +330,12 @@ public class AddAccident extends Application{
             @Override
 			public void handle(ActionEvent e) {
             	//reset labels
-            	lNthDriverSsn.setText("Driver SSN: \n###-##-#### format");                		
             	lNthDriverDamages.setText("Vehicle Damages: ");                		
             	lNthDriverVin.setText("Vehicle Vin: ");                		
-            	lNthDriverSsn.setTextFill(Color.BLACK);                		
             	lNthDriverDamages.setTextFill(Color.BLACK);                		
             	lNthDriverVin.setTextFill(Color.BLACK);
+            	
             	//check for text entry
-            	if(tNthDriverSsn.getText().isEmpty()) {
-        			lNthDriverSsn.setTextFill(Color.RED);
-            		lNthDriverSsn.setText("*Driver SSN Required");                		
-        		}
             	if(tNthDriverDamages.getText().isEmpty()) {
         			lNthDriverDamages.setTextFill(Color.RED);
             		lNthDriverDamages.setText("*Vehicle Damages Required");                		
@@ -360,12 +345,15 @@ public class AddAccident extends Application{
             		lNthDriverVin.setText("*Vehicle VIN Required");
         		}
             	//successful data entry and submission
-            	if(!tNthDriverVin.getText().isEmpty() && !tNthDriverDamages.getText().isEmpty() && !tNthDriverSsn.getText().isEmpty()) {
-            		ssn[numVehicles] = tNthDriverSsn.getText();
+            	if(!tNthDriverVin.getText().isEmpty() && !tNthDriverDamages.getText().isEmpty()) {
+            		if(tNthDriverSsn.getText().isEmpty()) {
+            			ssn[numVehicles] = null;
+            		}
+            		else { ssn[numVehicles] = tNthDriverSsn.getText(); }
+            		
             		vin[numVehicles] = tNthDriverVin.getText();
                 	damages[numVehicles] = Float.parseFloat(tNthDriverDamages.getText());
                 	//reset fields for next driver info input
-                	lNthDriverSsn.setText("Driver SSN: ");                		
                 	lNthDriverDamages.setText("Vehicle Damages: ");                		
                 	lNthDriverVin.setText("Vehicle Vin: "); 
                 	tNthDriverSsn.clear();

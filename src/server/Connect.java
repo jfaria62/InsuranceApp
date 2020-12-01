@@ -51,9 +51,7 @@ public class Connect {
             prep.setString(4, state);
             System.out.print("\nAccident INFO\naid: " + aid+ "\ndate: " + date + "\ncity/State: "+ city + state);
             try {    			
-    			prep.executeUpdate();
-    			System.out.print("\nAccident #" + date + " being added" );
-                
+    			prep.executeUpdate();    		    
     		} catch (SQLException e) {
     			// TODO Auto-generated catch block
     			e.printStackTrace();
@@ -76,9 +74,7 @@ public class Connect {
         		}     
             }
             prep.close();
-            conn.close();
-            //stmt.executeUpdate("Insert into accidents (date, city, state) values("+ date + ", " + city + ", " + state + ")");
-            //stmt2.executeUpdate("Insert into involvements (vin, damages, driver_ssn) values " + vin + ", " + damages + ", " + driver_ssn + ")");
+            conn.close();           
         }catch (SQLException e) {
             System.out.println(e.getMessage());
         }
