@@ -65,7 +65,7 @@ public class AddAccident extends Application{
         DatePicker datePicker = new DatePicker();
         HBox dateBox = new HBox(datePicker);
 		Label lDate = new Label("Date of Accident");
-        Button backMainMenuBtn = new Button("Back To Main Menu");
+        Button backMainMenuBtn = new Button("Return To Main Menu");
         Button submitBtn = new Button("Submit");
         Button addVehicleBtn = new Button("Add Vehicle Involved");
         Button submitNewDriverBtn = new Button("Submit Driver");

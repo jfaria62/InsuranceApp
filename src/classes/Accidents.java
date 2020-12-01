@@ -1,23 +1,31 @@
 package classes;
-import java.sql.Date;
 
 public class Accidents {
     private int aid;
-    private String accident_date;
+    private String accidentDate;
     private String city;
     private String state;
     private Float damages;
     private String driver_ssn;
+    private String vin;
 
     public Accidents(){}
 
-    public Accidents(String a_Date, String city, String state, Float damages, String ssn){        
+    public Accidents(String vin,String accidentDate, String city, String state, Float damages, String driver_ssn){        
         setLocation(city, state);
-        setDate(a_Date);
+        setDate(accidentDate);
         setDamages(damages);
-        setDriver(ssn);
+        setDriver(driver_ssn);
+        setVin(vin);
     }
 
+    public String getVin(){
+        return this.vin;
+    }
+
+    public void setVin(String vin){
+        this.vin= vin;
+    }
 
     public Float getDamages(){
         return this.damages;
@@ -31,8 +39,8 @@ public class Accidents {
         return this.driver_ssn;
     }
 
-    public void setDriver(String ssn){
-        this.driver_ssn = ssn;
+    public void setDriver(String driver_ssn){
+        this.driver_ssn = driver_ssn;
     }
 
     public int getID(){        
@@ -56,10 +64,10 @@ public class Accidents {
         this.state = state;
     }
     public String getDate(){
-        return this.accident_date;
+        return this.accidentDate;
     }
 
-    public void setDate(String strDate){
-    	this.accident_date = strDate;
+    public void setDate(String accidentDate){
+    	this.accidentDate = accidentDate;
     }
 }
