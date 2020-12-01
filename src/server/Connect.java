@@ -8,11 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
 import classes.Accidents;
-import classes.Record;
 
 public class Connect {
     private static Connection conn;
@@ -90,7 +86,8 @@ public class Connect {
     }//END ADDACCIDENT
     
 
-    public Record[] getAccidentsById(int aid) {   	
+    public Accidents[] getAccidentsById(int aid) {   	
+       Connect.connect();
        
 	   int count;
 	   Date accident_date;
@@ -101,28 +98,34 @@ public class Connect {
 	   int i = 0;
 	   
 	   try{
-		   String sqlAccidents = "SELECT a.accident_date, a.city, a.state, i.vin, i.damages FROM accidents a, involvements i where a.aid == i.aid and a.aid == ?";
-		   rs = stmt.executeQuery("select count(*) FROM accidents a, involvements i where a.aid == i.aid and a.aid == ?");
+		   String sqlAccidents = "SELECT a.accident_date, a.city, a.state, i.vin, i.damages, i.driver_ssn FROM accidents a, involvements i where a.aid == i.aid and a.aid == " + aid;
+		   rs = stmt.executeQuery("select count(*) FROM accidents a, involvements i where a.aid == i.aid and a.aid == " + aid);
 		   rs.next();
 		   count = rs.getInt(1);
-		   Record[] records = new Record[count];
-	       
-		   System.out.println("Count: " + count);
-	   
+		   Accidents[] records = new Accidents[count];
 	       PreparedStatement prep = conn.prepareStatement(sqlAccidents);   //create prepared statement to insert to accidents table
 	       
 	       rs = prep.executeQuery();
 	       while(rs.next()){
-	    	   records[i].setDate(rs.getString("accident_date"));  
+	    	   records[i] = new Accidents();	    	 
+	    	   records[i].setDate(rs.getString("accident_date"));
 	    	   records[i].setLocation(rs.getString("city"), rs.getString("state"));
 	    	   records[i].setDamages(rs.getFloat("damages")); 
+	    	   records[i].setVin(rs.getString("vin"));
+	    	   records[i].setDriver(rs.getString("driver_ssn"));
 	    	   i++;
             }
-
+	       conn.close();
 	       return records;   
        }catch(SQLException e){
            System.out.println(e.getMessage());
        }
+	try {
+		conn.close();
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	return null;
    }//END GETACCIDENTBYID 
 
@@ -209,7 +212,6 @@ public class Connect {
 				while(rs.next()){
 					records[i] = new Accidents();
 					String strDate = rs.getString("date");
-					//Date dDate = Date.valueOf(strDate);				//PROBLEM HERE
 					records[i].setID(rs.getInt("aid"));
 					records[i].setDate(strDate);  
 					records[i].setLocation(rs.getString("city"), rs.getString("state"));
@@ -220,6 +222,7 @@ public class Connect {
 				conn.close();
 				return records;
 			}
+			conn.close();
 			return null;
  		    
 		} catch (SQLException e) {
@@ -227,23 +230,13 @@ public class Connect {
 			System.out.print("\n" + e);
 			e.printStackTrace();
 		}       
+        try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return null;
     } //END GETBYCRITERIA 
-    
-   /* public void testMeth() {      	
-    	int numRows = 0; 
-    	try {
-			//System.out.print("\nQuery: select count(*) FROM (" + mainQuery + ")\n");
-    		rs = stmt.executeQuery("select count(*) FROM (" + mainQuery + ")"); 
-         	System.out.print("\n\ttest2");
-         	rs.next();        	
-  		    numRows = rs.getInt(1);
-  		    System.out.print("\nrows #: " + numRows);  		    
-  		    
-	    }catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.print("\nhere " + e);
-			e.printStackTrace();
-		}   
-    }*/
+      
 }
