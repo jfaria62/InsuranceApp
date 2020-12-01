@@ -106,17 +106,26 @@ public class Connect {
 	       PreparedStatement prep = conn.prepareStatement(sqlAccidents);   //create prepared statement to insert to accidents table
 	       
 	       rs = prep.executeQuery();
-	       while(rs.next()){
-	    	   records[i] = new Accidents();	    	 
-	    	   records[i].setDate(rs.getString("accident_date"));
-	    	   records[i].setLocation(rs.getString("city"), rs.getString("state"));
-	    	   records[i].setDamages(rs.getFloat("damages")); 
-	    	   records[i].setVin(rs.getString("vin"));
-	    	   records[i].setDriver(rs.getString("driver_ssn"));
-	    	   i++;
-            }
-	       conn.close();
-	       return records;   
+	       //Check if query returned results
+	       if(rs.next() == false) {
+	    	   conn.close();
+		       return null;
+	       }
+	       else {
+	    	   do{
+		    	   
+		    	   records[i] = new Accidents();	    	 
+		    	   records[i].setDate(rs.getString("accident_date"));
+		    	   records[i].setLocation(rs.getString("city"), rs.getString("state"));
+		    	   records[i].setDamages(rs.getFloat("damages")); 
+		    	   records[i].setVin(rs.getString("vin"));
+		    	   records[i].setDriver(rs.getString("driver_ssn"));
+		    	   i++;
+	            }while(rs.next());
+
+		       conn.close();
+	    	   return records;
+	       }	        
        }catch(SQLException e){
            System.out.println(e.getMessage());
        }

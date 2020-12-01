@@ -37,10 +37,9 @@ public class SearchById extends Application {
         grid.setPadding(new Insets(25, 25, 25, 25));
         Button returnMainBtn = new Button("Return To Main Menu");
         Button searchBtn = new Button("Search");
-        final Label lResults = new Label("Search Results");
+        Label lResults = new Label();
         final Label lAid = new Label("Accident ID:");
         Label lLocation = new Label();
-        Label lNoResults = new Label();
         
         TextField tAid = new TextField();
         lResults.setFont(new Font("Arial", 20));
@@ -54,17 +53,20 @@ public class SearchById extends Application {
         		//reset vars in case user deleted since last search click
         		aid = 0; 
         		
-        		//records = new Accidents[];
         		grid.getChildren().remove(list);
         		items.clear();
+        		lResults.setText("");
+        		lLocation.setText("");
+        		//if user entered an accident ID
         		if(!tAid.getText().isEmpty()) {
         			aid = Integer.parseInt(tAid.getText()); 
-        			records = conn.getAccidentsById(aid);                	
+        			records = conn.getAccidentsById(aid);  
+        			//if the query returned any results
         			if(records == null) {
-                		lResults.setText("No Results");
-                		grid.add(lNoResults, 0, 4);
+        				lResults.setText("No Results");
                 	}
             		else{
+            			lResults.setText("Search Results");
             			lLocation.setText("City: " + records[0].getCity() + " \tState: " + records[0].getState());
     	        		while(i < records.length) {
     	        			
@@ -73,17 +75,12 @@ public class SearchById extends Application {
     	        			i++;
     	               	}   
     	            	list.setItems(items);
-    	        		grid.add(lResults, 0, 2);
-    	        		grid.add(lLocation, 0, 3);
-    	            	grid.add(list, 0, 4);
-    	            
+    	        		grid.add(list, 0, 4);    	            
             		}
         		}
         		else {
         			lResults.setText("Must Enter Accident ID");
-        			grid.add(lNoResults, 0, 4);
-        		}
-        		
+        		}        		
         	}
     	});  
         
@@ -105,10 +102,11 @@ public class SearchById extends Application {
 				menu.start(primaryStage);
 			}
 		});  
-        
-        grid.add(returnMainBtn, 0, 5);
         grid.add(lAid, 0, 0);
         grid.add(tAid, 0, 1);
+        grid.add(lResults, 0, 2);
+        grid.add(lLocation, 0, 3);    	
+        grid.add(returnMainBtn, 0, 5);        
         grid.add(searchBtn, 1, 1);
 
         Scene scene = new Scene(grid, 700, 600);
