@@ -2,6 +2,7 @@
 ABOUT InsuranceApp 
 -------------------
 Created by Jonathan Faria, 2020
+
 Github: https://github.com/jfaria62/InsuranceApp
 
 This app was created as a final project for CIS 452: Dababase Systems @ UMass Dartmouth. 
