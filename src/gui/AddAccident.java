@@ -69,8 +69,10 @@ public class AddAccident extends Application{
         Button submitBtn = new Button("Submit");
         Button addVehicleBtn = new Button("Add Vehicle Involved");
         Button submitNewDriverBtn = new Button("Submit Driver");
-        Button cancelBtn = new Button("Cancel");        
-                
+        Button cancelBtn = new Button("Cancel"); 
+        //prevent users from entering bad date information
+        datePicker.getEditor().setDisable(true); 
+        
         //add all elements to current scene
   		Text scenetitle = new Text("Create An Accident Report");
   		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
@@ -360,7 +362,6 @@ public class AddAccident extends Application{
                 	tNthDriverDamages.clear();
                 	tNthDriverVin.clear();
                 	
-                	System.out.print(ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages "+ damages[numVehicles]);
                 	numVehicles++;
                 	primaryStage.setScene(scene);
                 	primaryStage.show();                
