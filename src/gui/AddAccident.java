@@ -362,7 +362,6 @@ public class AddAccident extends Application{
                 	tNthDriverDamages.clear();
                 	tNthDriverVin.clear();
                 	
-                	System.out.print(ssn[numVehicles] + "\nvin "+ vin[numVehicles]+ "\ndamages "+ damages[numVehicles]);
                 	numVehicles++;
                 	primaryStage.setScene(scene);
                 	primaryStage.show();                
